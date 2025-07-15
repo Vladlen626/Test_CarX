@@ -2,8 +2,8 @@
 
 public interface ITarget
 {
-    Vector3 Position { get; }
-    Vector3 Velocity { get; } 
+    Vector3 m_position { get; }
+    Vector3 m_velocity { get; } 
     void TakeDamage(int amount);
-    bool IsAlive { get; }
+    bool m_isAlive { get; }
 }

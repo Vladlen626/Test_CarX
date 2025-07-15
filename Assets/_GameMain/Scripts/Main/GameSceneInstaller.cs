@@ -4,38 +4,47 @@ using Zenject;
 
 public class GameSceneInstaller : MonoInstaller
 {
-    [SerializeField] private TowerFactory towerFactoryPrefab;
-    [SerializeField] private EnemySpawner enemySpawnerPrefab; 
+    [Header("Scene Instance")]
+    [SerializeField] private TowerSpawnPointService m_towerSpawnPointService;
+    [SerializeField] private Transform m_enemiesGoal;
     
-    [SerializeField] private Projectile projectileControllerPrefab;
-    [SerializeField] private Enemy enemyPrefab;
+    [Header("Prefabs")]
+    [SerializeField] private TowerFactory m_towerFactoryPrefab;
+    [SerializeField] private EnemySpawner m_enemySpawnerPrefab; 
+    [SerializeField] private Projectile m_projectileControllerPrefab;
+    [SerializeField] private Enemy m_enemyPrefab;
 
     public override void InstallBindings()
     {
-        Container.BindInterfacesAndSelfTo<Main>().AsSingle();
+        Container.BindInterfacesAndSelfTo<Main>().AsSingle().NonLazy();
         
-        Container.Bind<ITowerFactory>()
-            .To<TowerFactory>()
-            .FromComponentInNewPrefab(towerFactoryPrefab)
-            .AsSingle();
+        // Instance
+        Container.Bind<TowerSpawnPointService>().FromInstance(m_towerSpawnPointService).AsSingle();
+        Container.Bind<Transform>().WithId("EnemiesGoal").FromInstance(m_enemiesGoal).AsSingle();
         
         Container.Bind<TowerSpawnService>().AsSingle();
-        
         Container.Bind<IProjectileFactory>().To<ProjectileFactory>().AsSingle();
         Container.Bind<ITargetRegistry>().To<TargetRegistry>().AsSingle();
         
-        Container.Bind<EnemySpawner>()
-            .FromComponentInNewPrefab(enemySpawnerPrefab)
+        Container.Bind<ITowerFactory<Tower>>()
+            .To<TowerFactory>()
+            .FromComponentInNewPrefab(m_towerFactoryPrefab)
             .AsSingle();
         
+        Container.Bind<EnemySpawner>()
+            .FromComponentInNewPrefab(m_enemySpawnerPrefab)
+            .AsSingle();
+        
+        //Pools
         Container.BindMemoryPool<Projectile, Projectile.Pool>()
             .WithInitialSize(30)
-            .FromComponentInNewPrefab(projectileControllerPrefab);
+            .FromComponentInNewPrefab(m_projectileControllerPrefab);
         
         Container.BindMemoryPool<Enemy, Enemy.Pool>()
             .WithInitialSize(20)
-            .FromComponentInNewPrefab(enemyPrefab);
+            .FromComponentInNewPrefab(m_enemyPrefab);
+        
+       
     }
-    
     
 }

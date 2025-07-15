@@ -7,35 +7,35 @@ using DiContainer = Zenject.DiContainer;
 [System.Serializable]
 public class TowerByProjectileTypePrefab
 {
-    public ProjectileType projectileType;
-    public Tower towerPrefab;
+    public ProjectileType m_projectileType;
+    public Tower m_towerPrefab;
 }
 
-public class TowerFactory : MonoBehaviour, ITowerFactory
+public class TowerFactory : MonoBehaviour, ITowerFactory<Tower>
 {
-    [SerializeField] private List<TowerByProjectileTypePrefab> towerPrefabs;
+    [SerializeField] private List<TowerByProjectileTypePrefab> m_towerPrefabs;
 
-    private Dictionary<ProjectileType, Tower> _prefabDict;
-    private DiContainer _container;
+    private Dictionary<ProjectileType, Tower> m_prefabDict;
+    private DiContainer m_container;
 
     [Inject]
     public void Construct(DiContainer container)
     {
-        _container = container;
-        _prefabDict = new Dictionary<ProjectileType, Tower>();
-        foreach (var pair in towerPrefabs)
+        m_container = container;
+        m_prefabDict = new Dictionary<ProjectileType, Tower>();
+        foreach (var pair in m_towerPrefabs)
         {
-            if (!_prefabDict.ContainsKey(pair.projectileType))
-                _prefabDict.Add(pair.projectileType, pair.towerPrefab);
+            if (!m_prefabDict.ContainsKey(pair.m_projectileType))
+                m_prefabDict.Add(pair.m_projectileType, pair.m_towerPrefab);
         }
     }
 
     public Tower CreateTower(Vector3 position, ProjectileType towerType)
     {
-        if (!_prefabDict.TryGetValue(towerType, out var prefab) || prefab == null)
+        if (!m_prefabDict.TryGetValue(towerType, out var prefab) || prefab == null)
             return null;
         
-        var tower = _container.InstantiatePrefabForComponent<Tower>(prefab, position, Quaternion.identity, null);
+        var tower = m_container.InstantiatePrefabForComponent<Tower>(prefab, position, Quaternion.identity, null);
         tower.Init(towerType);
         return tower;
     }

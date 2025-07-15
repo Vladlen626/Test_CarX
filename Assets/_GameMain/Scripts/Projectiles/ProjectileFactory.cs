@@ -3,14 +3,14 @@ using Zenject;
 
 public class ProjectileFactory : IProjectileFactory
 {
-    private readonly Projectile.Pool _pool;
-    private readonly DiContainer _container;
+    private readonly Projectile.Pool m_pool;
+    private readonly DiContainer m_container;
 
     [Inject]
-    public ProjectileFactory(Projectile.Pool pool, DiContainer container)
+    public ProjectileFactory(Projectile.Pool mPool, DiContainer mContainer)
     {
-        _pool = pool;
-        _container = container;
+        m_pool = mPool;
+        m_container = mContainer;
     }
 
     public IProjectile Create(Vector3 position, Quaternion rotation, ProjectileType type,
@@ -31,7 +31,7 @@ public class ProjectileFactory : IProjectileFactory
                 break;
         }
 
-        var projectile = _pool.Spawn(position, rotation);
+        var projectile = m_pool.Spawn(position, rotation);
         projectile.Construct(movementStrategy);
         projectile.SetVisualByMovementType(type);
         return projectile;

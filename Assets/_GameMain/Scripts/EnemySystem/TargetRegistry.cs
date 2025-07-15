@@ -2,18 +2,17 @@
 
 public class TargetRegistry : ITargetRegistry
 {
-    private readonly List<ITarget> _targets = new List<ITarget>();
-
-    public IReadOnlyList<ITarget> Targets => _targets;
+    private readonly List<ITarget> m_targets = new List<ITarget>();
+    public IReadOnlyList<ITarget> m_Targets => m_targets;
 
     public void Register(ITarget target)
     {
-        if (!_targets.Contains(target))
-            _targets.Add(target);
+        if (!m_targets.Contains(target))
+            m_targets.Add(target);
     }
 
     public void Unregister(ITarget target)
     {
-        _targets.Remove(target);
+        m_targets.Remove(target);
     }
 }

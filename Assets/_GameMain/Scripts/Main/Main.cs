@@ -5,14 +5,14 @@ using Zenject;
 
 public class Main : IInitializable, IDisposable
 {
-    private readonly TowerSpawnService _towerSpawnService;
-    private readonly EnemySpawner _enemySpawner;
+    private readonly TowerSpawnService m_towerSpawnService;
+    private readonly EnemySpawner m_enemySpawner;
 
     [Inject]
     public Main(TowerSpawnService towerSpawnService, EnemySpawner enemySpawner)
     {
-        _towerSpawnService = towerSpawnService;
-        _enemySpawner = enemySpawner;
+        m_towerSpawnService = towerSpawnService;
+        m_enemySpawner = enemySpawner;
     }
     
     public void Initialize()
@@ -22,7 +22,7 @@ public class Main : IInitializable, IDisposable
     
     public void Dispose()
     {
-        _enemySpawner.StopSpawn();
+        m_enemySpawner.StopSpawn();
     }
     
     // _____________ Private _____________
@@ -30,16 +30,12 @@ public class Main : IInitializable, IDisposable
     private async UniTaskVoid StartGame()
     {
         await InitializeAll();
-        _enemySpawner.StartSpawn();
+        m_enemySpawner.StartSpawn();
     }
 
     private async UniTask InitializeAll()
     {
-        _towerSpawnService.SpawnAllFromPlaceholders();
-        
-        var moveTarget = GameObject.FindWithTag("EnemiesTarget")?.transform;
-        _enemySpawner.SetMoveTarget(moveTarget);
-        
         await UniTask.Yield();
-    }
+        m_towerSpawnService.SpawnAllTowers();
+    } 
 }

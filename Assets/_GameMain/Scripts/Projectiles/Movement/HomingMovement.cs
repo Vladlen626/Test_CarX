@@ -3,18 +3,26 @@ using UnityEngine;
 
 public class HomingMovement : IProjectileMovement
 {
-    private readonly ITarget _target;
+    private readonly ITarget m_target;
+    private const float m_minHitDistance = 0.05f;
 
-    public HomingMovement(ITarget target)
+    public HomingMovement(ITarget mTarget)
     {
-        _target = target;
+        m_target = mTarget;
     }
 
     public async UniTask MoveAsync(Projectile projectileController)
     {
-        while (projectileController && projectileController.gameObject.activeSelf && _target != null)
+        while (projectileController && projectileController.gameObject.activeSelf && m_target != null)
         {
-            var direction = (_target.Position - projectileController.transform.position).normalized;
+            var distance = Vector3.Distance(projectileController.transform.position, m_target.m_position);
+            if (distance < m_minHitDistance)
+            {
+                projectileController.Deactivate();
+                return;
+            }
+            
+            var direction = (m_target.m_position - projectileController.transform.position).normalized;
             projectileController.transform.forward = direction;
             projectileController.transform.position += direction * (projectileController.m_speed * Time.deltaTime);
             await UniTask.Yield();

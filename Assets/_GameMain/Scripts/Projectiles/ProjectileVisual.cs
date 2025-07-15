@@ -1,13 +1,15 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
+
 public class ProjectileVisual : MonoBehaviour
 {
-    [SerializeField] private GameObject straightVisual;
-    [SerializeField] private GameObject homingVisual;
+    [SerializeField] private GameObject m_straightVisual;
+    [SerializeField] private GameObject m_homingVisual;
 
     public void SetVisual(ProjectileType type)
     {
-        straightVisual.SetActive(type == ProjectileType.Straight);
-        homingVisual.SetActive(type == ProjectileType.Homing);
+        m_straightVisual.SetActive(type == ProjectileType.Straight);
+        m_homingVisual.SetActive(type == ProjectileType.Homing);
     }
 }

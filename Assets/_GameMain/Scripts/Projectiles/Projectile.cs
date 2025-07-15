@@ -10,7 +10,7 @@ public class Projectile : MonoBehaviour, IProjectile
     public int m_damage { get; private set; }
     
     private IProjectileMovement m_movementStrategy;
-    private ProjectileVisual _projectileVisual;
+    private ProjectileVisual m_projectileVisual;
     
     public class Pool : MonoMemoryPool<Vector3, Quaternion, Projectile>
     {
@@ -26,6 +26,12 @@ public class Projectile : MonoBehaviour, IProjectile
     {
         m_movementStrategy = movementStrategy;
     }
+    
+    public void Deactivate()
+    {
+        gameObject.SetActive(false);
+    }
+
 
     public void Fire(float speed, int damage)
     {
@@ -36,12 +42,12 @@ public class Projectile : MonoBehaviour, IProjectile
 
     public void SetVisualByMovementType(ProjectileType type)
     {
-        _projectileVisual.SetVisual(type);
+        m_projectileVisual.SetVisual(type);
     }
     
     private void Awake()
     {
-        _projectileVisual = GetComponent<ProjectileVisual>();
+        m_projectileVisual = GetComponent<ProjectileVisual>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -51,7 +57,7 @@ public class Projectile : MonoBehaviour, IProjectile
             return;
 
         enemy.TakeDamage(m_damage);
-        Destroy(gameObject);
+        Deactivate();
     }
     
 }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public interface ITowerFactory
+public interface ITowerFactory<out T>
 {
-    Tower CreateTower(Vector3 position, ProjectileType towerType);
+    T CreateTower(Vector3 position, ProjectileType towerType);
 }

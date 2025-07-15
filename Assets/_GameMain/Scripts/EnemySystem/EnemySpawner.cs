@@ -5,45 +5,46 @@ using Zenject;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private float interval = 3f;
+    [SerializeField] private float m_interval = 3f;
 
-    private Transform _moveTarget;
-    private Enemy.Pool _enemyPool;
-    private bool _isSpawning = false;
+    private Transform m_moveTarget;
+    private Enemy.Pool m_enemyPool;
+    private bool m_isSpawning;
 
     [Inject]
-    public void Construct(Enemy.Pool enemyPool)
+    public void Construct(Enemy.Pool enemyPool, [Inject(Id = "EnemiesGoal")] Transform enemiesGoal)
     {
-        _enemyPool = enemyPool;
+        m_enemyPool = enemyPool;
+        m_moveTarget = enemiesGoal;
     }
 
     public void StartSpawn()
     {
-        if (_isSpawning) return;
-        _isSpawning = true;
+        if (m_isSpawning) return;
+        m_isSpawning = true;
         SpawnLoop().Forget();
     }
     
     public void SetMoveTarget(Transform moveTarget)
     {
-        _moveTarget = moveTarget;
+        m_moveTarget = moveTarget;
     }
 
     public void StopSpawn()
     {
-        _isSpawning = false;
+        m_isSpawning = false;
     }
 
     private async UniTaskVoid SpawnLoop()
     {
-        while (_isSpawning)
+        while (m_isSpawning)
         {
-            if (_moveTarget)
+            if (m_moveTarget)
             {
-                var enemy = _enemyPool.Spawn(_moveTarget);
+                var enemy = m_enemyPool.Spawn(m_moveTarget);
                 enemy.transform.position = transform.position;
             }
-            await UniTask.Delay(System.TimeSpan.FromSeconds(interval));
+            await UniTask.Delay(System.TimeSpan.FromSeconds(m_interval));
         }
     }
 }

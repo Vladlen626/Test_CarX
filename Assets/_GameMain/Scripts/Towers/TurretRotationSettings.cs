@@ -1,6 +1,8 @@
-﻿[System.Serializable]
+﻿using UnityEngine.Serialization;
+
+[System.Serializable]
 public struct TurretRotationSettings
 {
-    public float rotationSpeed;    
-    public float toleranceDegrees;
+    public float m_rotationSpeed;    
+    public float m_toleranceDegrees;
 }

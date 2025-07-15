@@ -3,62 +3,52 @@ using UnityEngine;
 
 public class TurretRotator
 {
-    private readonly Transform _turret;
-    private readonly TurretRotationSettings _settings;
-    private Vector3 _targetPoint;
-    private bool _isRunning;
+    private readonly Transform m_turret;
+    private readonly TurretRotationSettings m_settings;
+    private Vector3 m_targetPoint;
+    private bool m_isRunning;
 
-    public TurretRotator(Transform turret, TurretRotationSettings settings)
+    public TurretRotator(Transform mTurret, TurretRotationSettings mSettings)
     {
-        _turret = turret;
-        _settings = settings;
-        _targetPoint = turret.position + turret.forward * 10f;
+        m_turret = mTurret;
+        m_settings = mSettings;
+        m_targetPoint = mTurret.position + mTurret.forward * 10f;
     }
 
     public void SetTargetPoint(Vector3 targetPoint)
     {
-        _targetPoint = targetPoint;
+        m_targetPoint = targetPoint;
     }
 
     public void StartRotationLoop()
     {
-        if (_isRunning) return;
-        _isRunning = true;
+        if (m_isRunning) return;
+        m_isRunning = true;
         RotationLoop().Forget();
     }
 
     public void StopRotationLoop()
     {
-        _isRunning = false;
+        m_isRunning = false;
     }
 
     private async UniTaskVoid RotationLoop()
     {
-        while (_isRunning)
+        while (m_isRunning)
         {
-            var flatTarget = new Vector3(_targetPoint.x, _turret.position.y, _targetPoint.z);
-            var direction = (flatTarget - _turret.position).normalized;
+            var flatTarget = new Vector3(m_targetPoint.x, m_turret.position.y, m_targetPoint.z);
+            var direction = (flatTarget - m_turret.position).normalized;
             if (direction != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
-                _turret.rotation = Quaternion.RotateTowards(
-                    _turret.rotation,
+                m_turret.rotation = Quaternion.RotateTowards(
+                    m_turret.rotation,
                     targetRotation,
-                    _settings.rotationSpeed * Time.deltaTime
+                    m_settings.m_rotationSpeed * Time.deltaTime
                 );
             }
 
             await UniTask.Yield();
         }
-    }
-
-    public bool IsAimed()
-    {
-        Vector3 flatTarget = new Vector3(_targetPoint.x, _turret.position.y, _targetPoint.z);
-        Vector3 direction = (flatTarget - _turret.position).normalized;
-        if (direction == Vector3.zero) return false;
-        Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
-        float angle = Quaternion.Angle(_turret.rotation, targetRotation);
-        return angle < _settings.toleranceDegrees;
     }
 }
