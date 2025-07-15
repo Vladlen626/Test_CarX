@@ -40,7 +40,7 @@ public class TurretRotator
             var direction = (flatTarget - m_turret.position).normalized;
             if (direction != Vector3.zero)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+                var targetRotation = Quaternion.LookRotation(direction, Vector3.up);
                 m_turret.rotation = Quaternion.RotateTowards(
                     m_turret.rotation,
                     targetRotation,

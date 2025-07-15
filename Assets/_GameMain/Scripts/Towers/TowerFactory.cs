@@ -1,42 +1,41 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
-using DiContainer = Zenject.DiContainer;
 
-[System.Serializable]
-public class TowerByProjectileTypePrefab
+public class TowerFactory : ITowerFactory<TowerView>
 {
-    public ProjectileType m_projectileType;
-    public Tower m_towerPrefab;
-}
-
-public class TowerFactory : MonoBehaviour, ITowerFactory<Tower>
-{
-    [SerializeField] private List<TowerByProjectileTypePrefab> m_towerPrefabs;
-
-    private Dictionary<ProjectileType, Tower> m_prefabDict;
-    private DiContainer m_container;
+    private readonly List<TowerConfigSO> m_configs;
+    private readonly DiContainer m_container;
+    private readonly ITargetRegistry m_targetRegistry;
 
     [Inject]
-    public void Construct(DiContainer container)
+    public TowerFactory(List<TowerConfigSO> configs, DiContainer container, ITargetRegistry targetRegistry)
     {
+        m_configs = configs;
         m_container = container;
-        m_prefabDict = new Dictionary<ProjectileType, Tower>();
-        foreach (var pair in m_towerPrefabs)
-        {
-            if (!m_prefabDict.ContainsKey(pair.m_projectileType))
-                m_prefabDict.Add(pair.m_projectileType, pair.m_towerPrefab);
-        }
+        m_targetRegistry = targetRegistry;
     }
 
-    public Tower CreateTower(Vector3 position, ProjectileType towerType)
+    public TowerView CreateTower(Vector3 position, ProjectileType projectileType)
     {
-        if (!m_prefabDict.TryGetValue(towerType, out var prefab) || prefab == null)
+        var config = m_configs.FirstOrDefault(c => c.m_projectileType == projectileType);
+        if (!config || !config.m_towerViewPrefab)
             return null;
-        
-        var tower = m_container.InstantiatePrefabForComponent<Tower>(prefab, position, Quaternion.identity, null);
-        tower.Init(towerType);
-        return tower;
+
+        var model = new TowerModel(
+            m_targetRegistry,
+            config.m_shootInterval,
+            config.m_range,
+            config.m_projectileSpeed,
+            config.m_damage,
+            config.m_enableLeadAim
+        );
+
+        var view = m_container.InstantiatePrefabForComponent<TowerView>(
+            config.m_towerViewPrefab, position, Quaternion.identity, null);
+        m_container.Inject(view);
+        view.Init(model, projectileType);
+        return view;
     }
 }

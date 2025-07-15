@@ -4,11 +4,11 @@ using Zenject;
 
 public class TowerSpawnService
 {
-    private readonly ITowerFactory<Tower> m_factory;
+    private readonly ITowerFactory<TowerView> m_factory;
     private readonly TowerSpawnPointService m_spawnPointService;
 
     [Inject]
-    public TowerSpawnService(ITowerFactory<Tower> factory, TowerSpawnPointService spawnPointService)
+    public TowerSpawnService(ITowerFactory<TowerView> factory, TowerSpawnPointService spawnPointService)
     {
         m_factory = factory;
         m_spawnPointService = spawnPointService;
