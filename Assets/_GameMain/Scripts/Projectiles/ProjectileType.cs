@@ -1,5 +1,6 @@
 ﻿public enum ProjectileType
 {
     Straight,
-    Homing
+    Homing,
+    Ballistic
 }

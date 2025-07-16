@@ -26,6 +26,9 @@ public class ProjectileFactory : IProjectileFactory
             case ProjectileType.Homing:
                 movementStrategy = new HomingMovement(target);
                 break;
+            case ProjectileType.Ballistic:
+                movementStrategy = new BallisticMovement(position, target);
+                break;
             default:
                 movementStrategy = new StraightMovement();
                 break;

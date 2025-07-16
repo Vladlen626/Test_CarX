@@ -14,6 +14,7 @@ public class Projectile : MonoBehaviour, IProjectile
     private CancellationTokenSource m_lifeTimeCts;
     private IProjectileMovement m_movementStrategy;
     private ProjectileVisual m_projectileVisual;
+    private Rigidbody m_rb;
 
     public class Pool : MonoMemoryPool<Vector3, Quaternion, Projectile>
     {
@@ -26,7 +27,19 @@ public class Projectile : MonoBehaviour, IProjectile
     }
     private void Awake()
     {
+        m_rb = GetComponent<Rigidbody>();
+        SetPhysicsEnabled(false);
         m_projectileVisual = GetComponent<ProjectileVisual>();
+    }
+    
+    public void SetPhysicsEnabled(bool newPhysState, Vector3? velocity = null)
+    {
+        if (!m_rb) return;
+
+        m_rb.isKinematic = !newPhysState;
+        m_rb.useGravity = newPhysState;
+        m_rb.velocity = newPhysState && velocity.HasValue ? velocity.Value : Vector3.zero;
+        m_rb.angularVelocity = Vector3.zero;
     }
     
     public void SetVisualByMovementType(ProjectileType type)
@@ -43,6 +56,7 @@ public class Projectile : MonoBehaviour, IProjectile
     {
         m_lifeTimeCts?.Cancel();
         m_lifeTimeCts = null;
+        SetPhysicsEnabled(false);
         gameObject.SetActive(false);
     }
     
